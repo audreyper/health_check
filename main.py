@@ -68,7 +68,7 @@ with open('ram.csv', 'w', newline='') as csv_file:
 ssh.close()
 
 # Constructs email
-subject = 'Explorer Health Check Report: Everything Looks Good'
+subject = 'Health Check Report: Everything Looks Good'
 body = ''
 sender = 'some email address'
 recipients = ['emai address', 'email address']
@@ -80,7 +80,7 @@ ram_path = 'ram.csv'
 
 def send_email(subject, body, sender, recipients, password, disk_path, cpu_path, ram_path) :
     
-    alert_subject = 'Health Check Alert: Threshold Reached for Explorer'
+    alert_subject = 'Health Check Alert: Threshold Reached'
 
     # Creates reader object for disk.csv
     with open(disk_path, 'r') as csv_file:
@@ -92,15 +92,15 @@ def send_email(subject, body, sender, recipients, password, disk_path, cpu_path,
     disk_html_table = '<table border="1" cellspacing="0" cellpadding="5"><caption>Disk Monitoring</caption>'
     disk_html_table += '<tr>{}</tr>'.format(''.join(f'<th>{header_item}</th>' for header_item in header))
     
-    for row in disk_data:
-        percentage = float(row[5].strip('%'))
+    for row_disk in disk_data:
+        percentage = float(row_disk[5].strip('%'))
         # Adds red to cell if threshold reached
-        if percentage > 50:
-            row[5] = f'<span style="color: red;">{row[4]}</span>'
+        if percentage > 80:
+            row_disk[5] = f'<span style="color: red;">{row_disk[4]}</span>'
             subject = alert_subject
-            body = 'Threshold Reached for Explorer: Disk Capacity. '
+            body = 'Threshold Reached: Disk Capacity. '
         # Adds rows to table
-        disk_html_table += '<tr>{}</tr>'.format(''.join(f'<td>{cell}</td>' for cell in row))
+        disk_html_table += '<tr>{}</tr>'.format(''.join(f'<td>{cell}</td>' for cell in row_disk))
 
      # Creates reader object for cpu.csv
     with open(cpu_path, 'r') as csv_file:
@@ -112,14 +112,14 @@ def send_email(subject, body, sender, recipients, password, disk_path, cpu_path,
     cpu_html_table = '<table border="1" cellspacing="0" cellpadding="5"><caption>CPU Monitoring</caption>'   
     cpu_html_table += '<tr>{}</tr>'.format(''.join(f'<th>{header_item}</th>' for header_item in header))
     
-    for row in data:
+    for row_cpu in data:
         # Adds red to cell if threshold reached
-            if float(row[1]) > 0.30:
-                row[1] = f'<span style="color: red;">{row[1]}</span>'
+            if float(row_cpu[1]) > 0.80:
+                row_cpu[1] = f'<span style="color: red;">{row_cpu[1]}</span>'
                 subject = alert_subject
-                body += 'Threshold for Reached for Explorer: CPU utilization. '
+                body += 'Threshold for Reached: CPU utilization. '
         # Adds rows to table
-    cpu_html_table += '<tr>{}</tr>'.format(''.join(f'<td>{cell}</td>' for cell in row))
+    cpu_html_table += '<tr>{}</tr>'.format(''.join(f'<td>{cell}</td>' for cell in row_cpu))
 
 
         # Creates reader object for ram monitoring
@@ -134,10 +134,10 @@ def send_email(subject, body, sender, recipients, password, disk_path, cpu_path,
 
     converted_number = ''.join(filter(str.isdigit, ram_data[0][4]))
     # Adds red to cell if threshold reached
-    if float(converted_number) > 2:
+    if float(converted_number) > 1300:
         ram_data[0][4] = f'<span style="color: red;">{ram_data[0][4]}</span>'
         subject = alert_subject
-        body += 'Threshold Reached for Explorer: RAM utilization.'
+        body += 'Threshold Reached: RAM utilization.'
 
     # Adds rows to table
     ram_html_table += '<tr>{}</tr>'.format(''.join(f'<td>{cell}</td>' for cell in ram_data[0]))
